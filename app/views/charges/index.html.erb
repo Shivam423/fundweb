@@ -1,0 +1,14 @@
+<h1>Your payment is successful</h1>
+<h1>Customer Details</h1>
+
+<!-- Add more customer details as needed -->
+
+
+<script>
+var stripe = Stripe("<%= ENV['STRIPE_PUBLISHABLE_KEY'] %>");
+stripe.redirectToCheckout({
+    sessionId: '<%= @session.id %>'
+}).then(function (result) {
+    console.log(result.error.message);
+});
+</script>

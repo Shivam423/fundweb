@@ -1,0 +1,74 @@
+<!-- Add this script tag to your HTML layout -->
+<script src="https://pay.google.com/gp/p/js/pay.js"></script>
+
+
+<form id="payment-form">
+  <div class="form-group">
+    <label for="amount">Investment Amount (in INR)</label>
+    <input type="number" id="amount" class="form-control" required>
+  </div>
+
+  <!-- Add other input fields for customer details as needed -->
+
+  <button id="google-pay-button" class="btn btn-primary">Pay with Google Pay</button>
+</form>
+
+
+<!-- Place this code at the end of your HTML body -->
+<script>
+  if (window.PaymentRequest) {
+    // Browser supports Payment Request API, load Google Pay API
+    const script = document.createElement('script');
+    script.src = 'https://pay.google.com/gp/p/js/pay.js';
+    script.onload = initializeGooglePay;
+    document.body.appendChild(script);
+  } else {
+    // Fallback to another payment method or show a message to users
+    console.log('Payment Request API is not supported in this browser.');
+  }
+
+  function initializeGooglePay() {
+    const paymentDataRequest = {
+      apiVersion: 2,
+      apiVersionMinor: 0,
+      allowedPaymentMethods: [
+        {
+          type: 'CARD',
+          parameters: {
+            allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+            allowedCardNetworks: ['AMEX', 'DISCOVER', 'MASTERCARD', 'VISA'],
+          },
+          tokenizationSpecification: {
+            type: 'PAYMENT_GATEWAY',
+            parameters: {
+              gateway: 'your_gateway_name', // Replace with your payment gateway
+            },
+          },
+        },
+      ],
+      merchantInfo: {
+        merchantName: 'fund',
+      },
+      transactionInfo: {
+        totalPriceStatus: 'FINAL',
+        totalPriceLabel: 'Total',
+        totalPrice: '10.00', // Replace with the actual total amount
+        currencyCode: 'INR', // Replace with the desired currency code
+      },
+    };
+  
+    const paymentsClient = new google.payments.api.PaymentsClient({ environment: 'TEST' }); // Use 'PRODUCTION' in a live environment
+  
+    const button = document.getElementById('google-pay-button');
+  
+    button.addEventListener('click', () => {
+      paymentsClient.loadPaymentData(paymentDataRequest).then(function (paymentData) {
+        // Handle the payment data and process the payment on your server
+      }).catch(function (error) {
+        // Handle errors
+      });
+    });
+  }
+  
+</script>
+
